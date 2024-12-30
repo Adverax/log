@@ -3,7 +3,7 @@ package log
 import (
 	"bytes"
 	"context"
-	"github.com/Adverax/core"
+	"github.com/adverax/core"
 	"sync"
 	"time"
 )

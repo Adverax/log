@@ -2,7 +2,7 @@ package log
 
 import (
 	"bytes"
-	"github.com/Adverax/core"
+	"github.com/adverax/core"
 	"os"
 )
 

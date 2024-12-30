@@ -1,6 +1,6 @@
 package log
 
-import "github.com/Adverax/core"
+import "github.com/adverax/core"
 
 type FormatterJsonBuilder struct {
 	*core.Builder

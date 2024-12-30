@@ -2,7 +2,7 @@ package log
 
 import (
 	"context"
-	"github.com/Adverax/core"
+	"github.com/adverax/core"
 )
 
 type Level uint8

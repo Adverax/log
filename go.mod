@@ -1,8 +1,8 @@
 module github.com/adverax/log
 
-go 1.19
+go 1.21.6
 
-require github.com/Adverax/core v0.0.0-20241230072440-156a57cd9b0d
+require github.com/adverax/core v0.0.0-20241230101610-0ec0fc36713e
 
 require (
 	github.com/satori/go.uuid v1.2.0 // indirect
