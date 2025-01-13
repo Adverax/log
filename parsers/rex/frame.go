@@ -10,20 +10,16 @@ type Frame interface {
 }
 
 type Entry struct {
-	re   *regexp.Regexp
-	keys []string
+	re *regexp.Regexp
 }
 
-func NewFrame(pattern string, keys []string) (*Entry, error) {
+func NewFrame(pattern string) (*Entry, error) {
 	re, err := regexp.Compile(pattern)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Entry{
-		re:   re,
-		keys: keys,
-	}, nil
+	return &Entry{re: re}, nil
 }
 
 func (that *Entry) Parse(data []byte, entry *log.Entry) (int, error) {
@@ -32,7 +28,12 @@ func (that *Entry) Parse(data []byte, entry *log.Entry) (int, error) {
 		return 0, nil
 	}
 
-	for i, key := range that.keys {
+	keys := that.re.SubexpNames()
+
+	for i, key := range keys {
+		if key == "" {
+			continue
+		}
 		entry.Data[key] = string(matches[i])
 	}
 
