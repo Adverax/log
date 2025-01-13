@@ -11,7 +11,7 @@ func NewFormatterJsonBuilder() *FormatterJsonBuilder {
 	return &FormatterJsonBuilder{
 		Builder: core.NewBuilder("json_formatter"),
 		formatter: &JSONFormatter{
-			timestampFormat:   defaultTimestampFormat,
+			timestampFormat:   DefaultTimestampFormat,
 			disableTimestamp:  false,
 			disableHTMLEscape: false,
 			dataKey:           "",

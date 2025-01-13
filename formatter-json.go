@@ -25,18 +25,18 @@ func (that *JSONFormatter) Format(entry *Entry) ([]byte, error) {
 		data = newData
 	}
 
-	prefixFieldClashes(data, that.fieldMap)
+	that.fieldMap.PrefixFieldClashes(data)
 
 	timestampFormat := that.timestampFormat
 
 	if entry.err != "" {
-		data[that.fieldMap.resolve(FieldKeyLoggerError)] = entry.err
+		data[that.fieldMap.Resolve(FieldKeyLoggerError)] = entry.err
 	}
 	if !that.disableTimestamp {
-		data[that.fieldMap.resolve(FieldKeyTime)] = entry.Time.Format(timestampFormat)
+		data[that.fieldMap.Resolve(FieldKeyTime)] = entry.Time.Format(timestampFormat)
 	}
-	data[that.fieldMap.resolve(FieldKeyMsg)] = entry.Message
-	data[that.fieldMap.resolve(FieldKeyLevel)] = entry.Level.String()
+	data[that.fieldMap.Resolve(FieldKeyMsg)] = entry.Message
+	data[that.fieldMap.Resolve(FieldKeyLevel)] = entry.Level.String()
 
 	var b *bytes.Buffer
 	if entry.Buffer != nil {

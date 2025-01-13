@@ -48,6 +48,16 @@ type LogFunction func(ctx context.Context) []interface{}
 
 type Fields map[string]interface{}
 
+func (that Fields) Fetch(key string) interface{} {
+	if that == nil {
+		return nil
+	}
+	if val, ok := that[key]; ok {
+		return val
+	}
+	return nil
+}
+
 func (that Fields) Clone() Fields {
 	clone := make(map[string]interface{}, len(that))
 	for k, v := range that {
