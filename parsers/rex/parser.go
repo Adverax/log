@@ -24,6 +24,7 @@ func (that *Engine) Parse(data []byte, entry *log.Entry) (int, error) {
 			return n, err
 		}
 		nn += n
+		data = data[n:]
 	}
 	return nn, nil
 }
