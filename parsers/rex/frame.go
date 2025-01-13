@@ -14,7 +14,7 @@ type Entry struct {
 	keys []string
 }
 
-func NewEntry(pattern string, keys []string) (*Entry, error) {
+func NewFrame(pattern string, keys []string) (*Entry, error) {
 	re, err := regexp.Compile(pattern)
 	if err != nil {
 		return nil, err
