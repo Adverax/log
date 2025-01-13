@@ -6,7 +6,7 @@ import (
 )
 
 type Frame interface {
-	Parse(data []byte, entry log.Entry) (int, error)
+	Parse(data []byte, entry *log.Entry) (int, error)
 }
 
 type Entry struct {
@@ -26,7 +26,7 @@ func NewEntry(pattern string, keys []string) (*Entry, error) {
 	}, nil
 }
 
-func (that *Entry) Parse(data []byte, entry log.Entry) (int, error) {
+func (that *Entry) Parse(data []byte, entry *log.Entry) (int, error) {
 	matches := that.re.FindSubmatch(data)
 	if matches == nil {
 		return 0, nil
