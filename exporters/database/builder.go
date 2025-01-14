@@ -10,13 +10,13 @@ import (
 
 type Builder struct {
 	*core.Builder
-	renderer *Renderer
+	exporter *Exporter
 }
 
 func NewBuilder() *Builder {
 	return &Builder{
-		Builder: core.NewBuilder("database-renderer"),
-		renderer: &Renderer{
+		Builder: core.NewBuilder("database-exporter"),
+		exporter: &Exporter{
 			table:           "log",
 			dataKey:         log.FieldKeyData,
 			timestampFormat: log.DefaultTimestampFormat,
@@ -26,60 +26,60 @@ func NewBuilder() *Builder {
 }
 
 func (that *Builder) WithDatabase(db *sql.DB) *Builder {
-	that.renderer.db = db
+	that.exporter.db = db
 	return that
 }
 
 func (that *Builder) WithTable(table string) *Builder {
-	that.renderer.table = table
+	that.exporter.table = table
 	return that
 }
 
 func (that *Builder) WithFieldMap(fieldMap log.FieldMap) *Builder {
-	that.renderer.fieldMap = fieldMap
+	that.exporter.fieldMap = fieldMap
 	return that
 }
 
 func (that *Builder) WithDataKey(dataKey string) *Builder {
-	that.renderer.dataKey = dataKey
+	that.exporter.dataKey = dataKey
 	return that
 }
 
 func (that *Builder) WithTimestampFormat(timestampFormat string) *Builder {
-	that.renderer.timestampFormat = timestampFormat
+	that.exporter.timestampFormat = timestampFormat
 	return that
 }
 
-func (that *Builder) Build() (*Renderer, error) {
+func (that *Builder) Build() (*Exporter, error) {
 	if err := that.checkRequiredFields(); err != nil {
 		return nil, err
 	}
 
-	that.renderer.fieldList = that.makeFieldList()
-	that.renderer.query = that.makeQuery()
-	return that.renderer, nil
+	that.exporter.fieldList = that.makeFieldList()
+	that.exporter.query = that.makeQuery()
+	return that.exporter, nil
 }
 
 func (that *Builder) checkRequiredFields() error {
-	that.Builder.RequiredField(that.renderer.db, ErrRequiredFieldDatabase)
-	that.RequiredField(that.renderer.table, ErrRequiredFieldTable)
-	that.RequiredField(that.renderer.fieldMap, ErrRequiredFieldFieldMap)
-	that.RequiredField(that.renderer.dataKey, ErrRequiredFieldDataKey)
-	that.RequiredField(that.renderer.timestampFormat, ErrRequiredFieldTimestampFormat)
+	that.Builder.RequiredField(that.exporter.db, ErrRequiredFieldDatabase)
+	that.RequiredField(that.exporter.table, ErrRequiredFieldTable)
+	that.RequiredField(that.exporter.fieldMap, ErrRequiredFieldFieldMap)
+	that.RequiredField(that.exporter.dataKey, ErrRequiredFieldDataKey)
+	that.RequiredField(that.exporter.timestampFormat, ErrRequiredFieldTimestampFormat)
 
 	return that.ResError()
 }
 
 func (that *Builder) makeFieldList() []string {
-	fields := make([]string, 0, len(that.renderer.fieldMap))
-	for _, v := range that.renderer.fieldMap {
+	fields := make([]string, 0, len(that.exporter.fieldMap))
+	for _, v := range that.exporter.fieldMap {
 		fields = append(fields, v)
 	}
 	return fields
 }
 
 func (that *Builder) makeQuery() string {
-	return "INSERT INTO " + that.renderer.table + " (" + strings.Join(that.renderer.fieldList, ", ") + ") VALUES (" + strings.Repeat("?, ", len(that.renderer.fieldList)-1) + "?)"
+	return "INSERT INTO " + that.exporter.table + " (" + strings.Join(that.exporter.fieldList, ", ") + ") VALUES (" + strings.Repeat("?, ", len(that.exporter.fieldList)-1) + "?)"
 }
 
 var (

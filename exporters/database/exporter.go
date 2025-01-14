@@ -8,7 +8,7 @@ import (
 
 type Translator func(interface{}) interface{}
 
-type Renderer struct {
+type Exporter struct {
 	db              *sql.DB
 	table           string // log -> db
 	fieldMap        log.FieldMap
@@ -18,7 +18,7 @@ type Renderer struct {
 	fieldList       []string
 }
 
-func (that *Renderer) Render(ctx context.Context, entry *log.Entry) {
+func (that *Exporter) Export(ctx context.Context, entry *log.Entry) {
 	data := entry.Data.Expand()
 
 	if that.dataKey != "" {

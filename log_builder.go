@@ -28,8 +28,8 @@ func (that *LogBuilder) WithLevel(level Level) *LogBuilder {
 	return that
 }
 
-func (that *LogBuilder) WithRenderer(renderer Renderer) *LogBuilder {
-	that.log.renderer = renderer
+func (that *LogBuilder) WithExporter(exporter Exporter) *LogBuilder {
+	that.log.exporter = exporter
 	return that
 }
 
@@ -58,12 +58,12 @@ func (that *LogBuilder) checkRequiredFields() error {
 }
 
 func (that *LogBuilder) updateDefaultFields() error {
-	if that.log.renderer == nil {
+	if that.log.exporter == nil {
 		formatter, err := NewFormatterJsonBuilder().Build()
 		if err != nil {
 			return err
 		}
-		that.log.renderer = NewRenderer(formatter, os.Stdout)
+		that.log.exporter = NewRenderer(formatter, os.Stdout)
 	}
 
 	return nil
@@ -72,7 +72,7 @@ func (that *LogBuilder) updateDefaultFields() error {
 func NewDummyLogger() *Log {
 	return core.Must(
 		NewLogBuilder().
-			WithRenderer(new(dummyRenderer)).
+			WithExporter(new(dummyExporter)).
 			Build(),
 	)
 }

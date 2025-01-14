@@ -7,11 +7,11 @@ import (
 	"os"
 )
 
-type Renderer interface {
-	Render(ctx context.Context, entry *Entry)
+type Exporter interface {
+	Export(ctx context.Context, entry *Entry)
 }
 
-type BaseRenderer struct {
+type BaseExporter struct {
 	formatter Formatter
 	out       io.Writer
 }
@@ -19,14 +19,14 @@ type BaseRenderer struct {
 func NewRenderer(
 	formatter Formatter,
 	out io.Writer,
-) *BaseRenderer {
-	return &BaseRenderer{
+) *BaseExporter {
+	return &BaseExporter{
 		formatter: formatter,
 		out:       out,
 	}
 }
 
-func (that *BaseRenderer) Render(ctx context.Context, entry *Entry) {
+func (that *BaseExporter) Export(ctx context.Context, entry *Entry) {
 	buffer := entry.Logger.GetBuffer()
 	defer func() {
 		entry.Buffer = nil
@@ -36,12 +36,12 @@ func (that *BaseRenderer) Render(ctx context.Context, entry *Entry) {
 	buffer.Reset()
 	entry.Buffer = buffer
 
-	that.render(entry)
+	that.export(entry)
 
 	entry.Buffer = nil
 }
 
-func (that *BaseRenderer) render(entry *Entry) {
+func (that *BaseExporter) export(entry *Entry) {
 	serialized, err := that.formatter.Format(entry)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to obtain reader, %v\n", err)
@@ -53,8 +53,8 @@ func (that *BaseRenderer) render(entry *Entry) {
 	}
 }
 
-type dummyRenderer struct{}
+type dummyExporter struct{}
 
-func (that *dummyRenderer) Render(ctx context.Context, entry *Entry) {
+func (that *dummyExporter) Export(ctx context.Context, entry *Entry) {
 	// nothing
 }

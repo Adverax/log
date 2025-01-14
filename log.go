@@ -9,7 +9,7 @@ import (
 )
 
 type Log struct {
-	renderer Renderer
+	exporter Exporter
 	level    Level
 	mu       sync.Mutex
 	hooks    *Hooks

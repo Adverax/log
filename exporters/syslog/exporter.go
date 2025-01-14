@@ -8,19 +8,19 @@ import (
 	"os"
 )
 
-type Renderer struct {
+type Exporter struct {
 	formatter log.Formatter
 	out       *syslog.Writer
 }
 
-func New(formatter log.Formatter, out *syslog.Writer) *Renderer {
-	return &Renderer{
+func New(formatter log.Formatter, out *syslog.Writer) *Exporter {
+	return &Exporter{
 		formatter: formatter,
 		out:       out,
 	}
 }
 
-func (that *Renderer) Render(ctx context.Context, entry *log.Entry) {
+func (that *Exporter) Export(ctx context.Context, entry *log.Entry) {
 	buffer := entry.Logger.GetBuffer()
 	defer func() {
 		entry.Buffer = nil
@@ -30,12 +30,12 @@ func (that *Renderer) Render(ctx context.Context, entry *log.Entry) {
 	buffer.Reset()
 	entry.Buffer = buffer
 
-	that.render(entry)
+	that.export(entry)
 
 	entry.Buffer = nil
 }
 
-func (that *Renderer) render(entry *log.Entry) {
+func (that *Exporter) export(entry *log.Entry) {
 	serialized, err := that.formatter.Format(entry)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to obtain reader, %v\n", err)
@@ -48,7 +48,7 @@ func (that *Renderer) render(entry *log.Entry) {
 	}
 }
 
-func (that *Renderer) put(level log.Level, msg string) error {
+func (that *Exporter) put(level log.Level, msg string) error {
 	switch level {
 	case log.TraceLevel:
 		return that.out.Debug(msg)
