@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"github.com/adverax/log"
 )
 
@@ -21,12 +22,6 @@ type Exporter struct {
 func (that *Exporter) Export(ctx context.Context, entry *log.Entry) {
 	data := entry.Data.Expand()
 
-	if that.dataKey != "" {
-		newData := make(log.Fields, 4)
-		newData[that.dataKey] = data
-		data = newData
-	}
-
 	that.fieldMap.EncodePrefixFieldClashes(data)
 
 	timestampFormat := that.timestampFormat
@@ -34,6 +29,17 @@ func (that *Exporter) Export(ctx context.Context, entry *log.Entry) {
 	data[that.fieldMap.Resolve(log.FieldKeyTime)] = entry.Time.Format(timestampFormat)
 	data[that.fieldMap.Resolve(log.FieldKeyMsg)] = entry.Message
 	data[that.fieldMap.Resolve(log.FieldKeyLevel)] = entry.Level.String()
+
+	if that.dataKey != "" {
+		raw, err := json.Marshal(entry.Data)
+		if err == nil {
+			data[that.dataKey] = string(raw)
+		} else {
+			delete(data, that.dataKey)
+		}
+	} else {
+		delete(data, that.dataKey)
+	}
 
 	args := make([]interface{}, 0, 32)
 	for _, field := range that.fieldList {
