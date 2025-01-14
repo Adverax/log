@@ -5,18 +5,18 @@ import (
 )
 
 type HookReplica struct {
-	renderer Renderer
+	exporter Exporter
 }
 
 func NewHookReplica(
-	renderer Renderer,
+	exporter Exporter,
 ) *HookReplica {
 	return &HookReplica{
-		renderer: renderer,
+		exporter: exporter,
 	}
 }
 
 func (that *HookReplica) Fire(ctx context.Context, entry *Entry) error {
-	that.renderer.Render(ctx, entry)
+	that.exporter.Export(ctx, entry)
 	return nil
 }
