@@ -14,7 +14,7 @@ func NewFormatterJsonBuilder() *FormatterJsonBuilder {
 			timestampFormat:   DefaultTimestampFormat,
 			disableTimestamp:  false,
 			disableHTMLEscape: false,
-			dataKey:           "",
+			dataKey:           FieldKeyData,
 			fieldMap:          nil,
 			prettyPrint:       false,
 		},

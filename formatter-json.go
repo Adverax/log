@@ -19,13 +19,11 @@ type JSONFormatter struct {
 func (that *JSONFormatter) Format(entry *Entry) ([]byte, error) {
 	data := entry.Data.Expand()
 
-	if that.dataKey != "" {
-		newData := make(Fields, 4)
-		newData[that.dataKey] = data
-		data = newData
-	}
+	newData := make(Fields, 4)
+	newData[FieldKeyData] = data
+	data = newData
 
-	that.fieldMap.PrefixFieldClashes(data)
+	that.fieldMap.EncodePrefixFieldClashes(data)
 
 	timestampFormat := that.timestampFormat
 

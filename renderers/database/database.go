@@ -26,7 +26,7 @@ func (that *Renderer) Render(ctx context.Context, entry *log.Entry) {
 		data = newData
 	}
 
-	that.fieldMap.PrefixFieldClashes(data)
+	that.fieldMap.EncodePrefixFieldClashes(data)
 
 	timestampFormat := that.timestampFormat
 

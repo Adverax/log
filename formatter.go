@@ -1,9 +1,11 @@
 package log
 
-import "time"
+const (
+	prefix = "fields."
+)
 
 const (
-	DefaultTimestampFormat = time.RFC3339
+	DefaultTimestampFormat = "2006-01-02 15:04:05"
 
 	FieldKeyMsg         = "msg"
 	FieldKeyLevel       = "level"
@@ -33,28 +35,33 @@ func (that FieldMap) Resolve(key fieldKey) string {
 	return string(key)
 }
 
-func (that FieldMap) PrefixFieldClashes(data Fields) {
-	timeKey := that.Resolve(FieldKeyTime)
-	if t, ok := data[timeKey]; ok {
-		data["fields."+timeKey] = t
-		delete(data, timeKey)
-	}
+func (that FieldMap) EncodePrefixFieldClashes(data Fields) {
+	that.encodePrefixFieldClash(data, FieldKeyTime)
+	that.encodePrefixFieldClash(data, FieldKeyMsg)
+	that.encodePrefixFieldClash(data, FieldKeyLevel)
+	that.encodePrefixFieldClash(data, FieldKeyLoggerError)
+}
 
-	msgKey := that.Resolve(FieldKeyMsg)
-	if m, ok := data[msgKey]; ok {
-		data["fields."+msgKey] = m
-		delete(data, msgKey)
+func (that FieldMap) encodePrefixFieldClash(data Fields, key fieldKey) {
+	k := that.Resolve(key)
+	if l, ok := data[k]; ok {
+		data[prefix+k] = l
+		delete(data, k)
 	}
+}
 
-	levelKey := that.Resolve(FieldKeyLevel)
-	if l, ok := data[levelKey]; ok {
-		data["fields."+levelKey] = l
-		delete(data, levelKey)
-	}
+func (that FieldMap) DecodePrefixFieldClashes(data Fields) {
+	that.decodePrefixFieldClash(data, FieldKeyTime)
+	that.decodePrefixFieldClash(data, FieldKeyMsg)
+	that.decodePrefixFieldClash(data, FieldKeyLevel)
+	that.decodePrefixFieldClash(data, FieldKeyLoggerError)
+}
 
-	logrusErrKey := that.Resolve(FieldKeyLoggerError)
-	if l, ok := data[logrusErrKey]; ok {
-		data["fields."+logrusErrKey] = l
-		delete(data, logrusErrKey)
+func (that FieldMap) decodePrefixFieldClash(data Fields, key fieldKey) {
+	k1 := that.Resolve(key)
+	k2 := prefix + k1
+	if l, ok := data[k2]; ok {
+		data[k1] = l
+		delete(data, k2)
 	}
 }

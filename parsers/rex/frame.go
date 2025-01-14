@@ -1,12 +1,11 @@
 package rex
 
 import (
-	"github.com/adverax/log"
 	"regexp"
 )
 
 type Frame interface {
-	Parse(data []byte, entry *log.Entry) (int, error)
+	Parse(data []byte, fields map[string]string) (int, error)
 }
 
 type Entry struct {
@@ -22,7 +21,7 @@ func NewFrame(pattern string) (*Entry, error) {
 	return &Entry{re: re}, nil
 }
 
-func (that *Entry) Parse(data []byte, entry *log.Entry) (int, error) {
+func (that *Entry) Parse(data []byte, fields map[string]string) (int, error) {
 	matches := that.re.FindSubmatch(data)
 	if matches == nil {
 		return 0, nil
@@ -34,7 +33,7 @@ func (that *Entry) Parse(data []byte, entry *log.Entry) (int, error) {
 		if key == "" {
 			continue
 		}
-		entry.Data[key] = string(matches[i])
+		fields[key] = string(matches[i])
 	}
 
 	return len(matches[0]), nil
