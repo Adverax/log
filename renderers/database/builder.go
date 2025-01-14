@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"errors"
 	"github.com/adverax/core"
 	"github.com/adverax/log"
@@ -17,11 +18,36 @@ func NewBuilder() *Builder {
 		Builder: core.NewBuilder("database-renderer"),
 		renderer: &Renderer{
 			table:           "log",
-			dataKey:         "data",
+			dataKey:         log.FieldKeyData,
 			timestampFormat: log.DefaultTimestampFormat,
 			fieldMap:        make(log.FieldMap),
 		},
 	}
+}
+
+func (that *Builder) WithDatabase(db *sql.DB) *Builder {
+	that.renderer.db = db
+	return that
+}
+
+func (that *Builder) WithTable(table string) *Builder {
+	that.renderer.table = table
+	return that
+}
+
+func (that *Builder) WithFieldMap(fieldMap log.FieldMap) *Builder {
+	that.renderer.fieldMap = fieldMap
+	return that
+}
+
+func (that *Builder) WithDataKey(dataKey string) *Builder {
+	that.renderer.dataKey = dataKey
+	return that
+}
+
+func (that *Builder) WithTimestampFormat(timestampFormat string) *Builder {
+	that.renderer.timestampFormat = timestampFormat
+	return that
 }
 
 func (that *Builder) Build() (*Renderer, error) {
