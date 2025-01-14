@@ -64,7 +64,6 @@ func (that *Builder) checkRequiredFields() error {
 	that.Builder.RequiredField(that.exporter.db, ErrRequiredFieldDatabase)
 	that.RequiredField(that.exporter.table, ErrRequiredFieldTable)
 	that.RequiredField(that.exporter.fieldMap, ErrRequiredFieldFieldMap)
-	that.RequiredField(that.exporter.dataKey, ErrRequiredFieldDataKey)
 	that.RequiredField(that.exporter.timestampFormat, ErrRequiredFieldTimestampFormat)
 
 	return that.ResError()
@@ -86,6 +85,5 @@ var (
 	ErrRequiredFieldDatabase        = errors.New("database is required")
 	ErrRequiredFieldTable           = errors.New("table is required")
 	ErrRequiredFieldFieldMap        = errors.New("field map is required")
-	ErrRequiredFieldDataKey         = errors.New("data key is required")
 	ErrRequiredFieldTimestampFormat = errors.New("timestamp format is required")
 )
