@@ -55,6 +55,7 @@ func (that *Builder) Build() (*Renderer, error) {
 		return nil, err
 	}
 
+	that.renderer.fieldList = that.makeFieldList()
 	that.renderer.query = that.makeQuery()
 	return that.renderer, nil
 }
@@ -69,12 +70,16 @@ func (that *Builder) checkRequiredFields() error {
 	return that.ResError()
 }
 
-func (that *Builder) makeQuery() string {
+func (that *Builder) makeFieldList() []string {
 	fields := make([]string, 0, len(that.renderer.fieldMap))
 	for _, v := range that.renderer.fieldMap {
 		fields = append(fields, v)
 	}
-	return "INSERT INTO " + that.renderer.table + " (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Repeat("?, ", len(fields)-1) + "?)"
+	return fields
+}
+
+func (that *Builder) makeQuery() string {
+	return "INSERT INTO " + that.renderer.table + " (" + strings.Join(that.renderer.fieldList, ", ") + ") VALUES (" + strings.Repeat("?, ", len(that.renderer.fieldList)-1) + "?)"
 }
 
 var (

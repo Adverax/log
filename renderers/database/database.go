@@ -15,6 +15,7 @@ type Renderer struct {
 	query           string
 	dataKey         string
 	timestampFormat string
+	fieldList       []string
 }
 
 func (that *Renderer) Render(ctx context.Context, entry *log.Entry) {
@@ -35,8 +36,8 @@ func (that *Renderer) Render(ctx context.Context, entry *log.Entry) {
 	data[that.fieldMap.Resolve(log.FieldKeyLevel)] = entry.Level.String()
 
 	args := make([]interface{}, 0, 32)
-	for _, v := range that.fieldMap {
-		vv := data.Fetch(v)
+	for _, field := range that.fieldList {
+		vv := data.Fetch(field)
 		args = append(args, vv)
 	}
 
