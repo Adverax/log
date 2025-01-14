@@ -8,20 +8,26 @@ type Frame interface {
 	Parse(data []byte, fields map[string]string) (int, error)
 }
 
-type Entry struct {
-	re *regexp.Regexp
+type Guard interface {
+	IsSatisfied(fields map[string]string) bool
 }
 
-func NewFrame(pattern string) (*Entry, error) {
-	re, err := regexp.Compile(pattern)
-	if err != nil {
-		return nil, err
-	}
+type GuardFunc func(fields map[string]string) bool
 
-	return &Entry{re: re}, nil
+func (that GuardFunc) IsSatisfied(fields map[string]string) bool {
+	return that(fields)
+}
+
+type Entry struct {
+	guard Guard
+	re    *regexp.Regexp
 }
 
 func (that *Entry) Parse(data []byte, fields map[string]string) (int, error) {
+	if that.guard != nil && !that.guard.IsSatisfied(fields) {
+		return 0, nil
+	}
+
 	matches := that.re.FindSubmatch(data)
 	if matches == nil {
 		return 0, nil

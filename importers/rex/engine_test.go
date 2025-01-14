@@ -11,11 +11,11 @@ import (
 func TestParser(t *testing.T) {
 	parser, err := NewBuilder().
 		WithFrame(
-			core.Must(NewFrame(`^\s*(?P<time>\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2})`)),
-			core.Must(NewFrame(`^\s*(?P<level>\w+)`)),
-			core.Must(NewFrame(`^\s*#(?P<trace_id>[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}):`)),
-			core.Must(NewFrame(`^\s*(?P<entity>\w+)\s*(?P<action>[a-zA-Z0-9<>=\-]+)\s*(?P<subject>\w+)?`)),
-			core.Must(NewFrame(`^\s*(?P<msg>.*?)(\s+DETAILS\s+(?P<data>\{.*\}))?$`)),
+			core.Must(NewFrameBuilder().WithPattern(`^\s*(?P<time>\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2})`).Build()),
+			core.Must(NewFrameBuilder().WithPattern(`^\s*(?P<level>\w+)`).Build()),
+			core.Must(NewFrameBuilder().WithPattern(`^\s*#(?P<trace_id>[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}):`).Build()),
+			core.Must(NewFrameBuilder().WithPattern(`^\s*(?P<entity>\w+)\s*(?P<action>[a-zA-Z0-9<>=\-]+)\s*(?P<subject>\w+)?`).Build()),
+			core.Must(NewFrameBuilder().WithPattern(`^\s*(?P<msg>.*?)(\s+DETAILS\s+(?P<data>\{.*\}))?$`).Build()),
 		).
 		Build()
 	require.NoError(t, err)
