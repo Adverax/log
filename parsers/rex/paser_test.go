@@ -15,7 +15,7 @@ func TestParser(t *testing.T) {
 			core.Must(NewFrame(`^\s*(?P<level>\w+)`)),
 			core.Must(NewFrame(`^\s*#(?P<trace_id>[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}):`)),
 			core.Must(NewFrame(`^\s*(?P<entity>\w+)\s*(?P<action>[a-zA-Z0-9<>=\-]+)\s*(?P<subject>\w+)?`)),
-			core.Must(NewFrame(`^\s*(?P<msg>.+) DETAILS\s*(?P<data>\{.+\})$`)),
+			core.Must(NewFrame(`^\s*(?P<msg>.*?)(\s+DETAILS\s+(?P<data>\{.*\}))?$`)),
 		).
 		Build()
 	require.NoError(t, err)
