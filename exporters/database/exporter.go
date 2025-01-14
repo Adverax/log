@@ -11,7 +11,7 @@ type Translator func(interface{}) interface{}
 
 type Exporter struct {
 	db              *sql.DB
-	table           string // log -> db
+	table           string
 	fieldMap        log.FieldMap
 	query           string
 	dataKey         string
@@ -30,21 +30,25 @@ func (that *Exporter) Export(ctx context.Context, entry *log.Entry) {
 	data[that.fieldMap.Resolve(log.FieldKeyMsg)] = entry.Message
 	data[that.fieldMap.Resolve(log.FieldKeyLevel)] = entry.Level.String()
 
+	fields := make(log.Fields, 4)
+	for k, v := range data {
+		if kk, ok := that.fieldMap[log.FieldKey(k)]; ok {
+			fields[kk] = v
+			delete(data, k)
+		}
+	}
+
 	if that.dataKey != "" {
 		raw, err := json.Marshal(entry.Data)
 		if err == nil {
-			data[that.dataKey] = string(raw)
-		} else {
-			delete(data, that.dataKey)
+			fields[that.dataKey] = string(raw)
 		}
-	} else {
-		delete(data, that.dataKey)
 	}
 
 	args := make([]interface{}, 0, 32)
 	for _, field := range that.fieldList {
-		vv := data.Fetch(field)
-		args = append(args, vv)
+		v := fields.Fetch(field)
+		args = append(args, v)
 	}
 
 	_, _ = that.db.Exec(that.query, args...)

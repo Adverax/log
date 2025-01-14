@@ -23,11 +23,11 @@ type Formatter interface {
 	Format(*Entry) ([]byte, error)
 }
 
-type fieldKey string
+type FieldKey string
 
-type FieldMap map[fieldKey]string
+type FieldMap map[FieldKey]string
 
-func (that FieldMap) Resolve(key fieldKey) string {
+func (that FieldMap) Resolve(key FieldKey) string {
 	if k, ok := that[key]; ok {
 		return k
 	}
@@ -42,7 +42,7 @@ func (that FieldMap) EncodePrefixFieldClashes(data Fields) {
 	that.encodePrefixFieldClash(data, FieldKeyLoggerError)
 }
 
-func (that FieldMap) encodePrefixFieldClash(data Fields, key fieldKey) {
+func (that FieldMap) encodePrefixFieldClash(data Fields, key FieldKey) {
 	k := that.Resolve(key)
 	if l, ok := data[k]; ok {
 		data[prefix+k] = l
@@ -57,7 +57,7 @@ func (that FieldMap) DecodePrefixFieldClashes(data Fields) {
 	that.decodePrefixFieldClash(data, FieldKeyLoggerError)
 }
 
-func (that FieldMap) decodePrefixFieldClash(data Fields, key fieldKey) {
+func (that FieldMap) decodePrefixFieldClash(data Fields, key FieldKey) {
 	k1 := that.Resolve(key)
 	k2 := prefix + k1
 	if l, ok := data[k2]; ok {
