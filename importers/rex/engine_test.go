@@ -1,7 +1,6 @@
 package rex
 
 import (
-	"github.com/adverax/core"
 	"github.com/adverax/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -11,11 +10,11 @@ import (
 func TestParser(t *testing.T) {
 	parser, err := NewBuilder().
 		WithFrame(
-			core.Must(NewFrameBuilder().WithPattern(`^\s*(?P<time>\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2})`).Build()),
-			core.Must(NewFrameBuilder().WithPattern(`^\s*(?P<level>\w+)`).Build()),
-			core.Must(NewFrameBuilder().WithPattern(`^\s*#(?P<trace_id>[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}):`).Build()),
-			core.Must(NewFrameBuilder().WithPattern(`^\s*(?P<entity>\w+)\s*(?P<action>[a-zA-Z0-9<>=\-]+)\s*(?P<subject>\w+)?`).Build()),
-			core.Must(NewFrameBuilder().WithPattern(`^\s*(?P<msg>.*?)(\s+DETAILS\s+(?P<data>\{.*\}))?$`).Build()),
+			must(NewFrameBuilder().WithPattern(`^\s*(?P<time>\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2})`).Build()),
+			must(NewFrameBuilder().WithPattern(`^\s*(?P<level>\w+)`).Build()),
+			must(NewFrameBuilder().WithPattern(`^\s*#(?P<trace_id>[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}):`).Build()),
+			must(NewFrameBuilder().WithPattern(`^\s*(?P<entity>\w+)\s*(?P<action>[a-zA-Z0-9<>=\-]+)\s*(?P<subject>\w+)?`).Build()),
+			must(NewFrameBuilder().WithPattern(`^\s*(?P<msg>.*?)(\s+DETAILS\s+(?P<data>\{.*\}))?$`).Build()),
 		).
 		Build()
 	require.NoError(t, err)

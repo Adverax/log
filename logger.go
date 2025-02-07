@@ -2,7 +2,7 @@ package log
 
 import (
 	"context"
-	"github.com/adverax/core"
+	"github.com/adverax/enums"
 )
 
 type Level uint8
@@ -32,7 +32,7 @@ const (
 	TraceLevel
 )
 
-var Levels = core.NewEnum[Level](
+var Levels = enums.New[Level](
 	map[Level]string{
 		PanicLevel: "panic",
 		FatalLevel: "fatal",

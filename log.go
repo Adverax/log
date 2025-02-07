@@ -3,7 +3,6 @@ package log
 import (
 	"bytes"
 	"context"
-	"github.com/adverax/core"
 	"sync"
 	"time"
 )
@@ -13,8 +12,8 @@ type Log struct {
 	level    Level
 	mu       sync.Mutex
 	hooks    *Hooks
-	entries  *core.Pool[Entry]
-	buffers  *core.Pool[bytes.Buffer]
+	entries  *pool[Entry]
+	buffers  *pool[bytes.Buffer]
 }
 
 func (that *Log) WithField(key string, value interface{}) LoggerEntry {

@@ -2,18 +2,15 @@ package rex
 
 import (
 	"errors"
-	"github.com/adverax/core"
 	"github.com/adverax/log"
 )
 
 type Builder struct {
-	*core.Builder
 	engine *Engine
 }
 
 func NewBuilder() *Builder {
 	return &Builder{
-		Builder: core.NewBuilder("parser"),
 		engine: &Engine{
 			fieldMap:         log.FieldMap{},
 			disableTimestamp: false,
@@ -51,10 +48,13 @@ func (that *Builder) Build() (*Engine, error) {
 }
 
 func (that *Builder) checkRequiredFields() error {
-	that.RequiredField(that.engine.frames, ErrFieldFramesRequired)
-	that.RequiredField(that.engine.fieldMap, ErrFieldFieldMapRequired)
-
-	return that.ResError()
+	if that.engine.frames == nil {
+		return ErrFieldFramesRequired
+	}
+	if that.engine.fieldMap == nil {
+		return ErrFieldFieldMapRequired
+	}
+	return nil
 }
 
 var (

@@ -1,15 +1,11 @@
 package log
 
-import "github.com/adverax/core"
-
 type FormatterJsonBuilder struct {
-	*core.Builder
 	formatter *JSONFormatter
 }
 
 func NewFormatterJsonBuilder() *FormatterJsonBuilder {
 	return &FormatterJsonBuilder{
-		Builder: core.NewBuilder("json_formatter"),
 		formatter: &JSONFormatter{
 			timestampFormat:   DefaultTimestampFormat,
 			disableTimestamp:  false,

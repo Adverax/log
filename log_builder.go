@@ -2,23 +2,20 @@ package log
 
 import (
 	"bytes"
-	"github.com/adverax/core"
 	"os"
 )
 
 type LogBuilder struct {
-	*core.Builder
 	log *Log
 }
 
 func NewLogBuilder() *LogBuilder {
 	return &LogBuilder{
-		Builder: core.NewBuilder("log"),
 		log: &Log{
 			level:   InfoLevel,
 			hooks:   NewHooks(),
-			entries: core.NewPool[Entry](),
-			buffers: core.NewPool[bytes.Buffer](),
+			entries: newPool[Entry](),
+			buffers: newPool[bytes.Buffer](),
 		},
 	}
 }
@@ -34,7 +31,7 @@ func (that *LogBuilder) WithExporter(exporter Exporter) *LogBuilder {
 }
 
 func (that *LogBuilder) WithHook(hook Hook) *LogBuilder {
-	that.log.AddHook(Levels.Values(), hook)
+	that.log.AddHook(Levels.Keys(), hook)
 	return that
 }
 
@@ -54,7 +51,7 @@ func (that *LogBuilder) Build() (*Log, error) {
 }
 
 func (that *LogBuilder) checkRequiredFields() error {
-	return that.ResError()
+	return nil
 }
 
 func (that *LogBuilder) updateDefaultFields() error {
@@ -70,9 +67,11 @@ func (that *LogBuilder) updateDefaultFields() error {
 }
 
 func NewDummyLogger() *Log {
-	return core.Must(
-		NewLogBuilder().
-			WithExporter(new(dummyExporter)).
-			Build(),
-	)
+	l, err := NewLogBuilder().
+		WithExporter(new(dummyExporter)).
+		Build()
+	if err != nil {
+		panic(err)
+	}
+	return l
 }

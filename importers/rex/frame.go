@@ -44,3 +44,10 @@ func (that *Entry) Parse(data []byte, fields map[string]string) (int, error) {
 
 	return len(matches[0]), nil
 }
+
+func must(frame Frame, err error) Frame {
+	if err != nil {
+		panic(err)
+	}
+	return frame
+}

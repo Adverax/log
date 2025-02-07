@@ -2,20 +2,17 @@ package rex
 
 import (
 	"errors"
-	"github.com/adverax/core"
 	"regexp"
 )
 
 type FrameBuilder struct {
-	*core.Builder
 	frame   *Entry
 	pattern string
 }
 
 func NewFrameBuilder() *FrameBuilder {
 	return &FrameBuilder{
-		Builder: core.NewBuilder("frame"),
-		frame:   &Entry{},
+		frame: &Entry{},
 	}
 }
 
@@ -44,8 +41,10 @@ func (that *FrameBuilder) Build() (*Entry, error) {
 }
 
 func (that *FrameBuilder) checkRequiredFields() error {
-	that.RequiredField(that.pattern, ErrPatternRequired)
-	return that.ResError()
+	if that.pattern == "" {
+		return ErrPatternRequired
+	}
+	return nil
 }
 
 var (

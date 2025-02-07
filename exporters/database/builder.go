@@ -3,19 +3,16 @@ package database
 import (
 	"database/sql"
 	"errors"
-	"github.com/adverax/core"
 	"github.com/adverax/log"
 	"strings"
 )
 
 type Builder struct {
-	*core.Builder
 	exporter *Exporter
 }
 
 func NewBuilder() *Builder {
 	return &Builder{
-		Builder: core.NewBuilder("database-exporter"),
 		exporter: &Exporter{
 			table:           "log",
 			dataKey:         log.FieldKeyData,
@@ -61,12 +58,19 @@ func (that *Builder) Build() (*Exporter, error) {
 }
 
 func (that *Builder) checkRequiredFields() error {
-	that.Builder.RequiredField(that.exporter.db, ErrRequiredFieldDatabase)
-	that.RequiredField(that.exporter.table, ErrRequiredFieldTable)
-	that.RequiredField(that.exporter.fieldMap, ErrRequiredFieldFieldMap)
-	that.RequiredField(that.exporter.timestampFormat, ErrRequiredFieldTimestampFormat)
-
-	return that.ResError()
+	if that.exporter.db == nil {
+		return ErrRequiredFieldDatabase
+	}
+	if that.exporter.table == "" {
+		return ErrRequiredFieldTable
+	}
+	if len(that.exporter.fieldMap) == 0 {
+		return ErrRequiredFieldFieldMap
+	}
+	if that.exporter.timestampFormat == "" {
+		return ErrRequiredFieldTimestampFormat
+	}
+	return nil
 }
 
 func (that *Builder) makeFieldList() []string {
