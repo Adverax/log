@@ -162,6 +162,7 @@ func (that *Log) AddHook(levels []Level, hook Hook) {
 func (that *Log) newEntry() *Entry {
 	entry := that.entries.Get()
 	entry.clear()
+	entry.Logger = that
 	return entry
 }
 
