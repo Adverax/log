@@ -151,8 +151,8 @@ func (that *Entry) log(ctx context.Context, level Level, msg string) {
 	entry.fire(ctx)
 	entry.Logger.exporter.Export(ctx, that)
 
-	if that.Level <= PanicLevel {
-		panic(that)
+	if entry.Level <= PanicLevel {
+		panic(entry)
 	}
 }
 
