@@ -2,6 +2,7 @@ package log
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 )
@@ -26,7 +27,12 @@ func ExampleLog() {
 
 	ctx := context.Background()
 	logger.Info(ctx, "Hello, World!")
+	logger.
+		WithFields(Fields{"key": "value"}).
+		WithError(fmt.Errorf("invalid value")).
+		Error(ctx, "Hello, World2!")
 
 	// Output:
 	// {"level":"info","msg":"Hello, World!","time":"0001-01-01 00:00:00"}
+	// {"data":{"error":"invalid value","key":"value"},"level":"error","msg":"Hello, World2!","time":"0001-01-01 00:00:00"}
 }
