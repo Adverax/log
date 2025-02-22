@@ -16,10 +16,14 @@ type BaseExporter struct {
 	out       io.Writer
 }
 
-func NewRenderer(
+func NewBaseExporter(
 	formatter Formatter,
 	out io.Writer,
 ) *BaseExporter {
+	if out == nil {
+		out = os.Stdout
+	}
+
 	return &BaseExporter{
 		formatter: formatter,
 		out:       out,

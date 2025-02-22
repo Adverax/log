@@ -20,7 +20,9 @@ func (that *JSONFormatter) Format(entry *Entry) ([]byte, error) {
 	data := entry.Data.Expand()
 
 	newData := make(Fields, 4)
-	newData[FieldKeyData] = data
+	if len(data) > 0 {
+		newData[FieldKeyData] = data
+	}
 	data = newData
 
 	that.fieldMap.EncodePrefixFieldClashes(data)

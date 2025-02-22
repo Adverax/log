@@ -60,7 +60,7 @@ func (that *LogBuilder) updateDefaultFields() error {
 		if err != nil {
 			return err
 		}
-		that.log.exporter = NewRenderer(formatter, os.Stdout)
+		that.log.exporter = NewBaseExporter(formatter, os.Stdout)
 	}
 
 	return nil

@@ -9,6 +9,12 @@ type Hook interface {
 	Fire(ctx context.Context, entry *Entry) error
 }
 
+type HookFunc func(ctx context.Context, entry *Entry) error
+
+func (fn HookFunc) Fire(ctx context.Context, entry *Entry) error {
+	return fn(ctx, entry)
+}
+
 type Hooks struct {
 	sync.RWMutex
 	hooks map[Level][]Hook
