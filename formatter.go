@@ -17,6 +17,7 @@ const (
 	FieldKeySubject     = "subject"
 	FieldKeyData        = "data"
 	FieldKeyDuration    = "duration"
+	FieldKeyTraceID     = "trace_id"
 )
 
 type Formatter interface {
