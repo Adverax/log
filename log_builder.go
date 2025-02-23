@@ -5,12 +5,12 @@ import (
 	"errors"
 )
 
-type LogBuilder struct {
+type Builder struct {
 	log *Log
 }
 
-func NewLogBuilder() *LogBuilder {
-	return &LogBuilder{
+func NewBuilder() *Builder {
+	return &Builder{
 		log: &Log{
 			level:   InfoLevel,
 			hooks:   NewHooks(),
@@ -20,34 +20,34 @@ func NewLogBuilder() *LogBuilder {
 	}
 }
 
-func (that *LogBuilder) WithLevel(level Level) *LogBuilder {
+func (that *Builder) WithLevel(level Level) *Builder {
 	that.log.level = level
 	return that
 }
 
-func (that *LogBuilder) WithExporter(exporter Exporter) *LogBuilder {
+func (that *Builder) WithExporter(exporter Exporter) *Builder {
 	that.log.exporter = exporter
 	return that
 }
 
-func (that *LogBuilder) WithHook(hook Hook) *LogBuilder {
+func (that *Builder) WithHook(hook Hook) *Builder {
 	that.log.AddHook(Levels.Keys(), hook)
 	return that
 }
 
-func (that *LogBuilder) WithHookForLevels(hook Hook, levels []Level) *LogBuilder {
+func (that *Builder) WithHookForLevels(hook Hook, levels []Level) *Builder {
 	that.log.AddHook(levels, hook)
 	return that
 }
 
-func (that *LogBuilder) Build() (*Log, error) {
+func (that *Builder) Build() (*Log, error) {
 	if err := that.checkRequiredFields(); err != nil {
 		return nil, err
 	}
 	return that.log, nil
 }
 
-func (that *LogBuilder) checkRequiredFields() error {
+func (that *Builder) checkRequiredFields() error {
 	if that.log.exporter == nil {
 		return ErrRequiredFieldExporter
 	}
@@ -60,7 +60,7 @@ var (
 )
 
 func NewDummyLogger() *Log {
-	l, err := NewLogBuilder().
+	l, err := NewBuilder().
 		WithExporter(new(dummyExporter)).
 		Build()
 	if err != nil {

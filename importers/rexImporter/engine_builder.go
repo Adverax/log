@@ -1,4 +1,4 @@
-package rex
+package rexImporter
 
 import (
 	"errors"

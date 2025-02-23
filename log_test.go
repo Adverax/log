@@ -20,7 +20,7 @@ func (that *myExporter) Export(ctx context.Context, entry *Entry) {
 func TestLogger(t *testing.T) {
 	exporter := &myExporter{}
 
-	logger, err := NewLogBuilder().
+	logger, err := NewBuilder().
 		WithLevel(InfoLevel).
 		WithExporter(exporter).
 		WithHook(HookFunc(func(ctx context.Context, entry *Entry) error {
