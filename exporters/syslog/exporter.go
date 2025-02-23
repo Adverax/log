@@ -1,4 +1,4 @@
-package syslog
+package syslogExporter
 
 import (
 	"context"

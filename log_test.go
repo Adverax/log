@@ -3,36 +3,43 @@ package log
 import (
 	"context"
 	"fmt"
-	"os"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"testing"
 	"time"
 )
 
-func ExampleLog() {
-	formatter, err := NewFormatterJsonBuilder().Build()
-	if err != nil {
-		panic(err)
-	}
+type myExporter struct {
+	entry *Entry
+}
+
+func (that *myExporter) Export(ctx context.Context, entry *Entry) {
+	that.entry = entry.clone()
+}
+
+func TestLogger(t *testing.T) {
+	exporter := &myExporter{}
 
 	logger, err := NewLogBuilder().
 		WithLevel(InfoLevel).
-		WithExporter(NewBaseExporter(formatter, os.Stdout)).
+		WithExporter(exporter).
 		WithHook(HookFunc(func(ctx context.Context, entry *Entry) error {
 			entry.Time = time.Time{}
 			return nil
 		})).
 		Build()
-	if err != nil {
-		panic(err)
-	}
+	require.NoError(t, err)
 
 	ctx := context.Background()
-	logger.Info(ctx, "Hello, World!")
+	err = fmt.Errorf("invalid value")
 	logger.
 		WithFields(Fields{"key": "value"}).
-		WithError(fmt.Errorf("invalid value")).
+		WithError(err).
 		Error(ctx, "Hello, World2!")
 
-	// Output:
-	// {"level":"info","msg":"Hello, World!","time":"0001-01-01 00:00:00"}
-	// {"data":{"error":"invalid value","key":"value"},"level":"error","msg":"Hello, World2!","time":"0001-01-01 00:00:00"}
+	assert.Equal(t, 2, len(exporter.entry.Data))
+	assert.Equal(t, "value", exporter.entry.Data["key"])
+	assert.Equal(t, err, exporter.entry.Data["error"])
+	assert.Equal(t, "Hello, World2!", exporter.entry.Message)
+	assert.Equal(t, ErrorLevel, exporter.entry.Level)
 }

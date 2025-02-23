@@ -1,4 +1,4 @@
-package database
+package databaseExporter
 
 import (
 	"database/sql"

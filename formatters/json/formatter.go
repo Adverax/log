@@ -1,27 +1,28 @@
-package log
+package jsonFormatter
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/adverax/log"
 )
 
-type JSONFormatter struct {
+type Formatter struct {
 	timestampFormat   string
 	disableTimestamp  bool
 	disableHTMLEscape bool
 	dataKey           string
-	fieldMap          FieldMap
+	fieldMap          log.FieldMap
 	prettyPrint       bool
 }
 
 // Format renders a single log entry
-func (that *JSONFormatter) Format(entry *Entry) ([]byte, error) {
+func (that *Formatter) Format(entry *log.Entry) ([]byte, error) {
 	data := entry.Data.Expand()
 
-	newData := make(Fields, 4)
+	newData := make(log.Fields, 4)
 	if len(data) > 0 {
-		newData[FieldKeyData] = data
+		newData[log.FieldKeyData] = data
 	}
 	data = newData
 
@@ -29,14 +30,14 @@ func (that *JSONFormatter) Format(entry *Entry) ([]byte, error) {
 
 	timestampFormat := that.timestampFormat
 
-	if entry.err != "" {
-		data[that.fieldMap.Resolve(FieldKeyLoggerError)] = entry.err
+	if entry.LogErr != "" {
+		data[that.fieldMap.Resolve(log.FieldKeyLoggerError)] = entry.LogErr
 	}
 	if !that.disableTimestamp {
-		data[that.fieldMap.Resolve(FieldKeyTime)] = entry.Time.Format(timestampFormat)
+		data[that.fieldMap.Resolve(log.FieldKeyTime)] = entry.Time.Format(timestampFormat)
 	}
-	data[that.fieldMap.Resolve(FieldKeyMsg)] = entry.Message
-	data[that.fieldMap.Resolve(FieldKeyLevel)] = entry.Level.String()
+	data[that.fieldMap.Resolve(log.FieldKeyMsg)] = entry.Message
+	data[that.fieldMap.Resolve(log.FieldKeyLevel)] = entry.Level.String()
 
 	var b *bytes.Buffer
 	if entry.Buffer != nil {

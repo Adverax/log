@@ -18,7 +18,7 @@ type Entry struct {
 	Level   Level
 	Message string
 	Buffer  *bytes.Buffer
-	err     string
+	LogErr  string
 }
 
 func NewEntry(logger *Log) *Entry {
@@ -35,7 +35,7 @@ func (that *Entry) clear() {
 	that.Level = 0
 	that.Message = ""
 	that.Buffer = nil
-	that.err = ""
+	that.LogErr = ""
 }
 
 func (that *Entry) clone() *Entry {
@@ -58,7 +58,7 @@ func (that *Entry) WithFields(fields Fields) LoggerEntry {
 		Logger: that.Logger,
 		Data:   data,
 		Time:   that.Time,
-		err:    err,
+		LogErr: err,
 	}
 }
 
@@ -71,7 +71,7 @@ func (that *Entry) WithTime(t time.Time) *Entry {
 		Logger: that.Logger,
 		Data:   that.Data.Clone(),
 		Time:   t,
-		err:    that.err,
+		LogErr: that.LogErr,
 	}
 }
 
@@ -178,7 +178,7 @@ func (that *Entry) expandData(fields Fields) (Fields, string) {
 		data[k] = v
 	}
 
-	fieldErr := that.err
+	fieldErr := that.LogErr
 	for k, v := range fields {
 		isErrField := false
 		if t := reflect.TypeOf(v); t != nil {
@@ -190,7 +190,7 @@ func (that *Entry) expandData(fields Fields) (Fields, string) {
 		if isErrField {
 			tmp := fmt.Sprintf("can not add field %q", k)
 			if fieldErr != "" {
-				fieldErr = that.err + ", " + tmp
+				fieldErr = that.LogErr + ", " + tmp
 			} else {
 				fieldErr = tmp
 			}

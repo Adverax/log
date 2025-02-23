@@ -2,7 +2,7 @@ package log
 
 import (
 	"bytes"
-	"os"
+	"errors"
 )
 
 type LogBuilder struct {
@@ -44,27 +44,20 @@ func (that *LogBuilder) Build() (*Log, error) {
 	if err := that.checkRequiredFields(); err != nil {
 		return nil, err
 	}
-	if err := that.updateDefaultFields(); err != nil {
-		return nil, err
-	}
 	return that.log, nil
 }
 
 func (that *LogBuilder) checkRequiredFields() error {
-	return nil
-}
-
-func (that *LogBuilder) updateDefaultFields() error {
 	if that.log.exporter == nil {
-		formatter, err := NewFormatterJsonBuilder().Build()
-		if err != nil {
-			return err
-		}
-		that.log.exporter = NewBaseExporter(formatter, os.Stdout)
+		return ErrRequiredFieldExporter
 	}
 
 	return nil
 }
+
+var (
+	ErrRequiredFieldExporter = errors.New("exporter is required")
+)
 
 func NewDummyLogger() *Log {
 	l, err := NewLogBuilder().

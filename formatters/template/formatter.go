@@ -1,9 +1,10 @@
-package log
+package template
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/adverax/log"
 	"sort"
 	"text/template"
 )
@@ -12,8 +13,8 @@ type Purifier interface {
 	Purify(original, derivative string) string
 }
 
-// TemplateFormatter formats logs into text
-type TemplateFormatter struct {
+// Formatter formats logs into text
+type Formatter struct {
 	purifier               Purifier
 	disableTimestamp       bool
 	timestampFormat        string
@@ -21,14 +22,14 @@ type TemplateFormatter struct {
 	sortingFunc            func([]string)
 	disableLevelTruncation bool
 	padLevelText           bool
-	fieldMap               FieldMap
+	fieldMap               log.FieldMap
 	template               *template.Template
 	systemFields           map[string]struct{}
 }
 
 // Format renders a single log entry
-func (that *TemplateFormatter) Format(entry *Entry) ([]byte, error) {
-	data := make(Fields)
+func (that *Formatter) Format(entry *log.Entry) ([]byte, error) {
+	data := make(log.Fields)
 	for k, v := range entry.Data {
 		data[k] = v
 	}
@@ -40,14 +41,14 @@ func (that *TemplateFormatter) Format(entry *Entry) ([]byte, error) {
 
 	fixedKeys := make([]string, 0, 4+len(data))
 	if !that.disableTimestamp {
-		fixedKeys = append(fixedKeys, that.fieldMap.Resolve(FieldKeyTime))
+		fixedKeys = append(fixedKeys, that.fieldMap.Resolve(log.FieldKeyTime))
 	}
-	fixedKeys = append(fixedKeys, that.fieldMap.Resolve(FieldKeyLevel))
+	fixedKeys = append(fixedKeys, that.fieldMap.Resolve(log.FieldKeyLevel))
 	if entry.Message != "" {
-		fixedKeys = append(fixedKeys, that.fieldMap.Resolve(FieldKeyMsg))
+		fixedKeys = append(fixedKeys, that.fieldMap.Resolve(log.FieldKeyMsg))
 	}
-	if entry.err != "" {
-		fixedKeys = append(fixedKeys, that.fieldMap.Resolve(FieldKeyLoggerError))
+	if entry.LogErr != "" {
+		fixedKeys = append(fixedKeys, that.fieldMap.Resolve(log.FieldKeyLoggerError))
 	}
 
 	if !that.disableSorting {
@@ -72,7 +73,7 @@ func (that *TemplateFormatter) Format(entry *Entry) ([]byte, error) {
 
 	timestampFormat := that.timestampFormat
 	if timestampFormat == "" {
-		timestampFormat = DefaultTimestampFormat
+		timestampFormat = log.DefaultTimestampFormat
 	}
 
 	systemFields := that.systemFields
@@ -88,34 +89,34 @@ func (that *TemplateFormatter) Format(entry *Entry) ([]byte, error) {
 	for _, key := range fixedKeys {
 		var value interface{}
 		switch {
-		case key == that.fieldMap.Resolve(FieldKeyTime):
+		case key == that.fieldMap.Resolve(log.FieldKeyTime):
 			value = entry.Time.Format(timestampFormat)
-		case key == that.fieldMap.Resolve(FieldKeyLevel):
+		case key == that.fieldMap.Resolve(log.FieldKeyLevel):
 			value = entry.Level.String()
-		case key == that.fieldMap.Resolve(FieldKeyMsg):
+		case key == that.fieldMap.Resolve(log.FieldKeyMsg):
 			value = that.purify(entry.Message)
-		case key == that.fieldMap.Resolve(FieldKeyLoggerError):
-			value = entry.err
-		case key == that.fieldMap.Resolve(FieldKeyTraceID):
+		case key == that.fieldMap.Resolve(log.FieldKeyLoggerError):
+			value = entry.LogErr
+		case key == that.fieldMap.Resolve(log.FieldKeyTraceID):
 			value, _ = data[key]
 			continue
-		case key == that.fieldMap.Resolve(FieldKeyEntity):
+		case key == that.fieldMap.Resolve(log.FieldKeyEntity):
 			value, _ = data[key]
 			entity = that.value2string(value)
 			continue
-		case key == that.fieldMap.Resolve(FieldKeyAction):
+		case key == that.fieldMap.Resolve(log.FieldKeyAction):
 			value, _ = data[key]
 			action = that.value2string(value)
 			continue
-		case key == that.fieldMap.Resolve(FieldKeyMethod):
+		case key == that.fieldMap.Resolve(log.FieldKeyMethod):
 			value, _ = data[key]
 			method = that.value2string(value)
 			continue
-		case key == that.fieldMap.Resolve(FieldKeySubject):
+		case key == that.fieldMap.Resolve(log.FieldKeySubject):
 			value, _ = data[key]
 			subject = that.value2string(value)
 			continue
-		case key == that.fieldMap.Resolve(FieldKeyData):
+		case key == that.fieldMap.Resolve(log.FieldKeyData):
 			value, _ = data[key]
 			body = that.value2string(value)
 			continue
@@ -134,8 +135,8 @@ func (that *TemplateFormatter) Format(entry *Entry) ([]byte, error) {
 	params["entity"] = that.formatEntity(entity, action)
 	params["event"] = that.formatEvent(method, subject, body)
 
-	if _, ok := params[FieldKeyTraceID]; !ok {
-		params[FieldKeyTraceID] = ""
+	if _, ok := params[log.FieldKeyTraceID]; !ok {
+		params[log.FieldKeyTraceID] = ""
 	}
 
 	if len(rest) > 0 {
@@ -154,7 +155,7 @@ func (that *TemplateFormatter) Format(entry *Entry) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func (that *TemplateFormatter) value2string(value interface{}) string {
+func (that *Formatter) value2string(value interface{}) string {
 	stringVal, ok := value.(string)
 	if !ok {
 		stringVal = fmt.Sprint(value)
@@ -163,7 +164,7 @@ func (that *TemplateFormatter) value2string(value interface{}) string {
 	return stringVal
 }
 
-func (that *TemplateFormatter) formatEntity(entity, action string) string {
+func (that *Formatter) formatEntity(entity, action string) string {
 	if entity == "" {
 		return ""
 	}
@@ -181,7 +182,7 @@ func (that *TemplateFormatter) formatEntity(entity, action string) string {
 	return result.String()
 }
 
-func (that *TemplateFormatter) formatEvent(method, subject, body string) string {
+func (that *Formatter) formatEvent(method, subject, body string) string {
 	if body == "" && subject == "" {
 		return ""
 	}
@@ -213,7 +214,7 @@ func (that *TemplateFormatter) formatEvent(method, subject, body string) string 
 	return result.String()
 }
 
-func (that *TemplateFormatter) purify(s string) string {
+func (that *Formatter) purify(s string) string {
 	if that.purifier == nil {
 		return s
 	}

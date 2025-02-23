@@ -1,22 +1,23 @@
-package log
+package hooks
 
 import (
 	"context"
+	"github.com/adverax/log"
 )
 
 type HookReplica struct {
-	exporter Exporter
+	exporter log.Exporter
 }
 
 func NewHookReplica(
-	exporter Exporter,
+	exporter log.Exporter,
 ) *HookReplica {
 	return &HookReplica{
 		exporter: exporter,
 	}
 }
 
-func (that *HookReplica) Fire(ctx context.Context, entry *Entry) error {
+func (that *HookReplica) Fire(ctx context.Context, entry *log.Entry) error {
 	that.exporter.Export(ctx, entry)
 	return nil
 }
