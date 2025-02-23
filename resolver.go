@@ -56,7 +56,7 @@ func (that *opaqueResolver) NewContext(ctx context.Context) context.Context {
 }
 
 func (that *opaqueResolver) Resolve(ctx context.Context) Logger {
-	return getLogger(ctx, that.logger)
+	return GetLogger(ctx, that.logger)
 }
 
 type transparentResolver struct {
@@ -64,7 +64,7 @@ type transparentResolver struct {
 }
 
 func (that *transparentResolver) NewContext(ctx context.Context) context.Context {
-	logger := getLogger(ctx, nil)
+	logger := GetLogger(ctx, nil)
 	if logger == nil {
 		return NewContext(ctx, that.logger)
 	}
@@ -73,7 +73,7 @@ func (that *transparentResolver) NewContext(ctx context.Context) context.Context
 }
 
 func (that *transparentResolver) Resolve(ctx context.Context) Logger {
-	return getLogger(ctx, that.logger)
+	return GetLogger(ctx, that.logger)
 }
 
 func NewResolver(logger Logger, mode ContextMode) Resolver {
@@ -87,7 +87,12 @@ func NewResolver(logger Logger, mode ContextMode) Resolver {
 	}
 }
 
-func getLogger(ctx context.Context, defVal Logger) Logger {
+// NewContext returns new context with logger
+func NewContext(ctx context.Context, logger Logger) context.Context {
+	return context.WithValue(ctx, contextLoggerKey, logger)
+}
+
+func GetLogger(ctx context.Context, defVal Logger) Logger {
 	val := ctx.Value(contextLoggerKey)
 	if l, ok := val.(Logger); ok {
 		return l
@@ -97,16 +102,11 @@ func getLogger(ctx context.Context, defVal Logger) Logger {
 }
 
 // Resolve returns logger from context
-func Resolve(ctx context.Context) Logger {
-	log := getLogger(ctx, nil)
+var Resolve = func(ctx context.Context) Logger {
+	log := GetLogger(ctx, nil)
 	if log == nil {
 		panic(fmt.Errorf("logger not found in context: %v", ctx))
 	}
 
 	return log
-}
-
-// NewContext returns new context with logger
-func NewContext(ctx context.Context, logger Logger) context.Context {
-	return context.WithValue(ctx, contextLoggerKey, logger)
 }
