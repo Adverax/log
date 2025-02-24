@@ -8,11 +8,7 @@ import (
 	"os"
 )
 
-type Exporter interface {
-	Export(ctx context.Context, entry *log.Entry)
-}
-
-type BaseExporter struct {
+type Exporter struct {
 	formatter log.Formatter
 	out       io.Writer
 }
@@ -20,18 +16,18 @@ type BaseExporter struct {
 func New(
 	formatter log.Formatter,
 	out io.Writer,
-) *BaseExporter {
+) *Exporter {
 	if out == nil {
 		out = os.Stdout
 	}
 
-	return &BaseExporter{
+	return &Exporter{
 		formatter: formatter,
 		out:       out,
 	}
 }
 
-func (that *BaseExporter) Export(ctx context.Context, entry *log.Entry) {
+func (that *Exporter) Export(ctx context.Context, entry *log.Entry) {
 	buffer := entry.Logger.GetBuffer()
 	defer func() {
 		entry.Buffer = nil
@@ -46,7 +42,7 @@ func (that *BaseExporter) Export(ctx context.Context, entry *log.Entry) {
 	entry.Buffer = nil
 }
 
-func (that *BaseExporter) export(entry *log.Entry) {
+func (that *Exporter) export(entry *log.Entry) {
 	serialized, err := that.formatter.Format(entry)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to obtain reader, %v\n", err)
