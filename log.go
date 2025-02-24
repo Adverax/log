@@ -12,6 +12,7 @@ type Log struct {
 	level    Level
 	mu       sync.Mutex
 	hooks    *Hooks
+	peaces   *pool[Piece]
 	entries  *pool[Entry]
 	buffers  *pool[bytes.Buffer]
 }
@@ -129,7 +130,8 @@ func (that *Log) LogFn(ctx context.Context, level Level, fn LogFunction) {
 		entry := that.newEntry()
 		defer that.freeEntry(entry)
 
-		entry.Log(ctx, level, fn(ctx)...)
+		entry.Level = level
+		fn(ctx, entry)
 	}
 }
 

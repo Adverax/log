@@ -49,10 +49,18 @@ func (that *Entry) clone() *Entry {
 }
 
 func (that *Entry) WithField(key string, value interface{}) LoggerEntry {
-	return that.WithFields(Fields{key: value})
+	return that.withFields(Fields{key: value})
+}
+
+func (that *Entry) withField(key string, value interface{}) *Entry {
+	return that.withFields(Fields{key: value})
 }
 
 func (that *Entry) WithFields(fields Fields) LoggerEntry {
+	return that.withFields(fields)
+}
+
+func (that *Entry) withFields(fields Fields) *Entry {
 	data, err := that.expandData(fields)
 	return &Entry{
 		Logger: that.Logger,
@@ -63,7 +71,11 @@ func (that *Entry) WithFields(fields Fields) LoggerEntry {
 }
 
 func (that *Entry) WithError(err error) LoggerEntry {
-	return that.WithField(ErrorKey, err)
+	return that.withField(ErrorKey, err)
+}
+
+func (that *Entry) withError(err error) *Entry {
+	return that.withField(ErrorKey, err)
 }
 
 func (that *Entry) WithTime(t time.Time) *Entry {

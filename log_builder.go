@@ -14,6 +14,7 @@ func NewBuilder() *Builder {
 		log: &Log{
 			level:   InfoLevel,
 			hooks:   NewHooks(),
+			peaces:  newPool[Piece](),
 			entries: newPool[Entry](),
 			buffers: newPool[bytes.Buffer](),
 		},

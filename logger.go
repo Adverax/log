@@ -44,7 +44,7 @@ var Levels = enums.New[Level](
 	},
 )
 
-type LogFunction func(ctx context.Context) []interface{}
+type LogFunction func(ctx context.Context, logger LoggerEntry)
 
 type Fields map[string]interface{}
 
@@ -80,6 +80,15 @@ func (that Fields) Expand() Fields {
 		}
 	}
 	return data
+}
+
+type LoggerPiece interface {
+	WithField(key string, value interface{}) LoggerPiece
+	WithFields(fields Fields) LoggerPiece
+	WithError(err error) LoggerPiece
+
+	Message(ctx context.Context, msg string)
+	Messagef(ctx context.Context, format string, args ...interface{})
 }
 
 type LoggerEntry interface {
