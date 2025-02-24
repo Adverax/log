@@ -35,6 +35,11 @@ func (that *Builder) WithHook(hook Hook) *Builder {
 	return that
 }
 
+func (that *Builder) WithHookForLevel(hook Hook, level Level) *Builder {
+	that.log.AddHook([]Level{level}, hook)
+	return that
+}
+
 func (that *Builder) WithHookForLevels(hook Hook, levels []Level) *Builder {
 	that.log.AddHook(levels, hook)
 	return that
