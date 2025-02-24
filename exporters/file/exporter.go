@@ -17,7 +17,7 @@ type BaseExporter struct {
 	out       io.Writer
 }
 
-func NewExporter(
+func New(
 	formatter log.Formatter,
 	out io.Writer,
 ) *BaseExporter {
