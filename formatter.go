@@ -20,6 +20,16 @@ const (
 	FieldKeyTraceID     = "trace_id"
 )
 
+const (
+	EntityActionIncomeRequest       = ">>"
+	EntityActionOutcomeRequest      = "<<"
+	EntityActionIncomeResponse      = ">"
+	EntityActionOutcomeResponse     = "<"
+	EntityActionTransitRequest      = ">>>"
+	EntityActionTransitResponse     = "<--"
+	EntityActionTransitNotification = "<<<"
+)
+
 type Formatter interface {
 	Format(*Entry) ([]byte, error)
 }
