@@ -1,5 +1,5 @@
-github.com/adverax/enums v0.0.0-20250122082856-05538905a8a3 h1:8kGnvAVdkYiIGPuGFasNrt7DRqiiBk727bQiiXUDeow=
-github.com/adverax/enums v0.0.0-20250122082856-05538905a8a3/go.mod h1:Dr8vCRZPTwPLFDFvl7Uk6An49YpTBr56DACJB7s2lxY=
+github.com/adverax/enums v1.0.0 h1:rw7eCb2IJxywX7kcDuMU4y+qCM3RE5rHYsLBMk95tLQ=
+github.com/adverax/enums v1.0.0/go.mod h1:Dr8vCRZPTwPLFDFvl7Uk6An49YpTBr56DACJB7s2lxY=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fortytw2/leaktest v1.3.0 h1:u8491cBMTQ8ft8aeV+adlcytMZylmA5nnwwkRZjI8vw=

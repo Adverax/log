@@ -3,7 +3,7 @@ module github.com/adverax/log
 go 1.21.6
 
 require (
-	github.com/adverax/enums v1.0.1
+	github.com/adverax/enums v1.0.0
 	github.com/olivere/elastic/v7 v7.0.32
 	github.com/stretchr/testify v1.10.0
 )
